@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "@types/jest": "^23.3.12",
+    "jest": "^23.6.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "discord.js-selfbot-v13": "^2.9.20",
+    "dotenv": "^16.0.3"
+  }
+}
