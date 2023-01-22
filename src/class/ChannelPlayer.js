@@ -1,11 +1,14 @@
-const {createAudioPlayer, createAudioResource} = require("@discordjs/voice");
+const {createAudioPlayer, createAudioResource, NoSubscriberBehavior} = require("@discordjs/voice");
 const play = require('play-dl');
 class ChannelPlayer  {
 
 constructor () {
     this.channel = null ;
     this.queue = [];
-    this.player = createAudioPlayer()
+    this.player = createAudioPlayer({
+        behaviors: {
+            noSubscriber: NoSubscriberBehavior.Play,
+        }})
     this.pause = false ;
     this.Manager();
 }

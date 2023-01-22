@@ -97,7 +97,7 @@ readline.on('line', async (input) => {
 
 
     if (args[0] === 'users')
-        console.log(controller.targetChannel.members.cache.map(user => user.user.username))
+        console.log(client.users.cache.map(user => user.username))
 
     if (args[0] === 'user')
         console.log(controller.targetUser)
@@ -145,7 +145,17 @@ readline.on('line', async (input) => {
     }
 
 
+    if (args[0] === 'call') {
+        controller.callFriend()
+    }
 
+    if (args[0] === 'endcall') {
+        controller.endCall()
+    }
+
+    if (args[0] === 'voice') {
+        console.log(controller.voiceConnection)
+    }
 })
 
 

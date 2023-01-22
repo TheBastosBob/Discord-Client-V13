@@ -1,5 +1,6 @@
 const { joinVoiceChannel } = require('@discordjs/voice');
 const ChannelPlayer = require("./ChannelPlayer");
+const {RelationshipManager} = require("discord.js-selfbot-v13");
 
 class BotController {
 
@@ -8,8 +9,10 @@ class BotController {
         this.targetChannel = null;
         this.targetUser = null;
         this.targetVoiceChannel = null;
+        this.targetFriend = null;
         this.client = client;
         this.playerController = new ChannelPlayer();
+        this.relationships = new RelationshipManager(this.client);
     }
 
     set targetServer(server) {
@@ -18,6 +21,14 @@ class BotController {
 
     set targetChannel(channel) {
         this._targetChannel = channel;
+    }
+
+    set targetFriend(userName) {
+        this._targetFriend = userName;
+    }
+
+    get targetFriend() {
+        return this._targetFriend;
     }
 
     set targetUser(user) {
@@ -55,7 +66,7 @@ class BotController {
     }
 
     setTargetUser(userName) {
-        const user = this.targetChannel.members.cache.find(user => user.user.username === userName)
+        const user = this.client.users.cache.find(user => user.username === userName)
         if (user) {
             this.targetUser = user;
         } else {
@@ -74,6 +85,45 @@ class BotController {
         } catch (error) {
             console.log('No server selected')
         }
+    }
+
+    setTargetFriend(userName) {
+        const friend = this.client.users.cache.find(user => user.username === userName)
+        if (friend) {
+            this.targetFriend = friend;
+        } else {
+            console.log('User does not exist')
+        }
+    }
+
+    callFriend() {
+        try {
+            if (this.targetUser) {
+                //create dm channel
+                this.targetUser.createDM().then(async (channel) => {
+                    this.voiceConnection = await channel.call();
+                })
+            } else {
+                console.log('No friend selected')
+            }
+        } catch (error) {
+            console.log('Error: ' + error)
+        }
+    }
+
+    endCall() {
+        try {
+            if (this.voiceConnection) {
+                console.log(this.voiceConnection)
+                this.voiceConnection.destroy();
+            }
+        } catch (error) {
+            console.log('Error: ' + error)
+        }
+    }
+
+    inviteFriend() {
+
     }
 
     connectToVoiceChannel() {
@@ -121,8 +171,9 @@ class BotController {
     }
 
     pause() {
-        this.playerController.pause();
+        this.playerController.pauseMusic();
     }
+
 
 
 }
