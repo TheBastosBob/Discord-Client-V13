@@ -1,4 +1,5 @@
-const { Client, CustomStatus } = require('discord.js-selfbot-v13');
+const { Client, CustomStatus, VoiceChannel } = require('discord.js-selfbot-v13');
+const { joinVoiceChannel } = require('@discordjs/voice');
 const {getServerList} = require("./src/servers");
 const BotController = require("./src/class/BotController");
 const {printMessages} = require("./src/messages");
@@ -11,6 +12,7 @@ const client = new Client({
     // https://discordjs-self-v13.netlify.app/#/docs/docs/main/typedef/ClientOptions
     // All partials are loaded automatically
     readyStatus: false,
+    patchVoice: true,
 });
 
 const controller = new BotController(client);
@@ -55,8 +57,13 @@ readline.on('line', async (input) => {
         controller.setTargetServer(args.slice(1).join(" "))
     }
 
-    if (args[0] === 'channels')
-        console.log(controller.targetServer.channels.cache.map(channel => channel.name))
+    if (args[0] === 'channels') {
+        if (controller.targetServer) {
+            console.log(controller.targetServer.channels.cache.map(channel => channel.name))
+        } else {
+            console.log('No server selected')
+        }
+    }
 
     if (args[0] === 'channel')
         console.log(controller.targetChannel)
@@ -64,6 +71,30 @@ readline.on('line', async (input) => {
     if (args[0] === 'setchannel') {
         controller.setTargetChannel(args.slice(1).join(" "))
     }
+
+    if (args[0] === 'voicechannels') {
+        if (controller.targetServer) {
+            console.log(controller.targetServer.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').map(channel => channel.name))
+        } else {
+            console.log('No server selected')
+        }
+    }
+
+    if (args[0] === 'voicechannel')
+        console.log(controller.targetVoiceChannel)
+
+    if (args[0] === 'setvoicechannel') {
+        controller.setTargetVoiceChannel(args.slice(1).join(" "))
+    }
+
+    if (args[0] === 'connect') {
+        controller.connectToVoiceChannel()
+    }
+
+    if (args[0] === 'disconnect') {
+        controller.disconnectFromVoiceChannel()
+    }
+
 
     if (args[0] === 'users')
         console.log(controller.targetChannel.members.cache.map(user => user.user.username))
@@ -94,6 +125,26 @@ readline.on('line', async (input) => {
     if (args[0] === 'edit') {
         controller.targetChannel.messages.fetch(args[1]).then(message => message.edit(args.slice(2).join(" ")))
     }
+
+    //music
+
+    if (args[0] === 'play') {
+        controller.play(args.slice(1).join(" "))
+    }
+
+    if (args[0] === 'stop') {
+        controller.stop()
+    }
+
+    if (args[0] === 'pause') {
+        controller.pause()
+    }
+
+    if (args[0] === 'resume') {
+        controller.pause()
+    }
+
+
 
 })
 
