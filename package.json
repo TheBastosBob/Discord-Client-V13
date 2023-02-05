@@ -9,8 +9,10 @@
   "dependencies": {
     "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.14.0",
+    "2captcha": "^3.0.5",
     "discord.js-selfbot-v13": "^2.9.20",
     "dotenv": "^16.0.3",
+    "hcaptcha": "^0.1.1",
     "play-dl": "^1.9.6"
   }
 }

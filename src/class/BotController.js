@@ -9,10 +9,13 @@ class BotController {
         this.targetChannel = null;
         this.targetUser = null;
         this.targetVoiceChannel = null;
+        this.voiceState = null;
         this.targetFriend = null;
         this.client = client;
         this.playerController = new ChannelPlayer();
         this.relationships = new RelationshipManager(this.client);
+        this.commandListener();
+        this.callResponder();
     }
 
     set targetServer(server) {
@@ -37,6 +40,14 @@ class BotController {
 
     get targetServer() {
         return this._targetServer;
+    }
+
+    set voiceState(state) {
+        this._voiceState = state;
+    }
+
+    get voiceState() {
+        return this._voiceState;
     }
 
     get targetChannel() {
@@ -174,8 +185,74 @@ class BotController {
         this.playerController.pauseMusic();
     }
 
+    callResponder() {
+        //if the bot receives a call accept it
+        this.client.on('voiceStateUpdate', (oldState, newState) => {
+            if (newState.channelId && !oldState.channelId) {
+                if (newState.channel.type === 'DM' || newState.channel.type === 'GROUP_DM') {
+                    newState.channel.call().then(connection => {
+                        this.voiceConnection = connection;
+                    })
+                }
+            }
+        })
+    }
 
-
+    commandListener() {
+        //listen commands from direct messages
+        this.client.on('messageCreate', async (message) => {
+            if (message.channel.type === 'DM' && message.author.id === process.env.USER_ID) {
+                //commands
+                if (message.content.startsWith('!')) {
+                    const command = message.content.split(' ')[0].substring(1);
+                    const args = message.content.split(' ').slice(1);
+                    switch (command) {
+                        case 'server':
+                            this.setTargetServer(args[0]);
+                            break;
+                        case 'channel':
+                            this.setTargetChannel(args[0]);
+                            break;
+                        case 'user':
+                            this.setTargetUser(args[0]);
+                            break;
+                        case 'voice':
+                            this.setTargetVoiceChannel(args[0]);
+                            break;
+                        case 'friend':
+                            this.setTargetFriend(args[0]);
+                            break;
+                        case 'call':
+                            this.callFriend();
+                            break;
+                        case 'end':
+                            this.endCall();
+                            break;
+                        case 'invite':
+                            this.inviteFriend();
+                            break;
+                        case 'connect':
+                            this.connectToVoiceChannel();
+                            break;
+                        case 'disconnect':
+                            this.disconnectFromVoiceChannel();
+                            break;
+                        case 'play':
+                            this.play(args[0]);
+                            break;
+                        case 'stop':
+                            this.stop();
+                            break;
+                        case 'pause':
+                            this.pause();
+                            break;
+                        default:
+                            console.log('Command not found')
+                    }
+                }
+            }
+        })
+    }
 }
 
 module.exports = BotController;
