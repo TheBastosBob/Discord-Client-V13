@@ -188,6 +188,7 @@ class BotController {
     callResponder() {
         //if the bot receives a call accept it
         this.client.on('voiceStateUpdate', (oldState, newState) => {
+            console.log(newState.channelId)
             if (newState.channelId && !oldState.channelId) {
                 if (newState.channel.type === 'DM' || newState.channel.type === 'GROUP_DM') {
                     newState.channel.call().then(connection => {

@@ -9,10 +9,13 @@ require('dotenv').config();
 
 const botTable = [];
 
-const bot = new ClientBot({id: 'bot1', token: process.env.DISCORD_TOKEN});
+const bot = new ClientBot({id: 'bot1', token: process.env.BINKS_TOKEN});
+const bot2 = new ClientBot({id: 'bot2', token: process.env.DISCORD_TOKEN});
 botTable.push(bot);
+botTable.push(bot2);
 
 bot.start();
+bot2.start();
 
 
 //
@@ -51,7 +54,6 @@ const readline = require('readline').createInterface({
 //
 //constantantly check for input
 readline.on('line', async (input) => {
-    console.log(`Received: ${input}`);
     //split the input into an array
     const args = input.split(" ");
     //if input is 'exit' then exit
